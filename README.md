@@ -83,33 +83,6 @@ const FlowerShop = () => {
       event: 'anniversary',
       flowers: 'mixed',
       description: 'Ароматная композиция с лавандой и сиреневыми цветами.'
-    },
-    {
-      id: 7,
-      name: 'Розовое облако',
-      price: 'от 38€',
-      image: 'https://images.unsplash.com/photo-1591290619762-d4b0c55cd5e6?w=800&h=600&fit=crop',
-      event: 'romance',
-      flowers: 'roses',
-      description: 'Нежный букет из розовых роз и гипсофилы.'
-    },
-    {
-      id: 8,
-      name: 'Тропический рай',
-      price: 'от 45€',
-      image: 'https://images.unsplash.com/photo-1455875623638-2c18a0e27290?w=800&h=600&fit=crop',
-      event: 'birthday',
-      flowers: 'mixed',
-      description: 'Экзотическая композиция с тропическими цветами и зеленью.'
-    },
-    {
-      id: 9,
-      name: 'Белоснежная радость',
-      price: 'от 40€',
-      image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&h=600&fit=crop',
-      event: 'wedding',
-      flowers: 'mixed',
-      description: 'Элегантный букет в белых тонах для особенных моментов.'
     }
   ];
 
@@ -124,7 +97,7 @@ const FlowerShop = () => {
       id: 1,
       name: 'Anna K.',
       rating: 5,
-      text: 'Замечательный магазин! Букет был свежим и красивым, доставили точно в срок в Таллинн.',
+      text: 'Замечательный магазин! Букет был свежим и красивым, доставили точно в срок.',
       date: '15.12.2024'
     },
     {
@@ -155,10 +128,6 @@ const FlowerShop = () => {
     {
       q: 'Как долго стоят цветы?',
       a: 'При правильном уходе наши букеты остаются свежими от 7 до 14 дней. Мы прилагаем инструкции по уходу.'
-    },
-    {
-      q: 'Какие способы оплаты доступны?',
-      a: 'Мы принимаем оплату наличными, картой, банковским переводом и онлайн-оплату.'
     }
   ];
 
@@ -198,7 +167,10 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
 ⏰ Время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Tallinn' })}`;
 
     try {
-      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      console.log('Отправка в Telegram...');
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -211,10 +183,6 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
 
       const result = await response.json();
       console.log('Telegram response:', result);
-      
-      if (!response.ok) {
-        console.error('Telegram API error:', result);
-      }
       
       return response.ok;
     } catch (error) {
@@ -306,9 +274,16 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 rounded-xl transition-all font-medium shadow-lg disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 rounded-xl transition-all font-medium shadow-lg disabled:opacity-50 relative"
                 >
-                  {isSubmitting ? 'Отправка...' : 'Отправить'}
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Отправка...
+                    </div>
+                  ) : (
+                    'Отправить'
+                  )}
                 </button>
               </form>
             </>
@@ -317,7 +292,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
               <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Check className="w-12 h-12 text-white" strokeWidth={3} />
               </div>
-              <h3 className="text-3xl font-bold mb-3 text-gray-800">Успешно отправлено! ✓</h3>
+              <h3 className="text-3xl font-bold mb-3 text-gray-800">Успешно! ✓</h3>
               <p className="text-gray-600 text-lg">Ваша заявка получена!</p>
               <p className="text-gray-500 text-sm mt-2">Мы свяжемся с вами в ближайшее время</p>
             </div>
@@ -328,9 +303,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
   };
 
   const Header = () => (
-    <header className="sticky top-0 bg-white shadow-md z-40" style={{
-      background: 'linear-gradient(to bottom, #ffffff 0%, #fff5f8 100%)'
-    }}>
+    <header className="sticky top-0 bg-white shadow-md z-40">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div
@@ -346,7 +319,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
           </div>
 
           <nav className="space-x-8 hidden md:flex">
-            {['home', 'catalog', 'about', 'delivery', 'contacts'].map(p => (
+            {['home', 'catalog', 'about', 'contacts'].map(p => (
               <button
                 key={p}
                 onClick={() => setCurrentPage(p)}
@@ -356,7 +329,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
                     : 'text-gray-700 hover:text-pink-500'
                 }`}
               >
-                {p === 'home' ? 'Главная' : p === 'catalog' ? 'Каталог' : p === 'about' ? 'О нас' : p === 'delivery' ? 'Доставка' : 'Контакты'}
+                {p === 'home' ? 'Главная' : p === 'catalog' ? 'Каталог' : p === 'about' ? 'О нас' : 'Контакты'}
               </button>
             ))}
           </nav>
@@ -373,7 +346,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
 
         {mobileMenuOpen && (
           <nav className="md:hidden mt-4 pb-4 space-y-2">
-            {['home', 'catalog', 'about', 'delivery', 'contacts'].map(p => (
+            {['home', 'catalog', 'about', 'contacts'].map(p => (
               <button
                 key={p}
                 onClick={() => {
@@ -384,7 +357,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
                   currentPage === p ? 'bg-pink-50 text-pink-500' : 'text-gray-700'
                 }`}
               >
-                {p === 'home' ? 'Главная' : p === 'catalog' ? 'Каталог' : p === 'about' ? 'О нас' : p === 'delivery' ? 'Доставка' : 'Контакты'}
+                {p === 'home' ? 'Главная' : p === 'catalog' ? 'Каталог' : p === 'about' ? 'О нас' : 'Контакты'}
               </button>
             ))}
           </nav>
@@ -395,22 +368,8 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
 
   const HomePage = () => (
     <>
-      <section className="relative h-[700px] flex items-center overflow-hidden">
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, #ffe6f0 0%, #fff 25%, #ffe6f0 50%, #fff 75%, #ffe6f0 100%)'
-        }}>
-          <div className="absolute top-10 left-10 opacity-20">
-            <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200" alt="" className="w-32 h-32 rounded-full blur-sm" />
-          </div>
-          <div className="absolute top-32 right-20 opacity-20">
-            <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=200" alt="" className="w-40 h-40 rounded-full blur-sm" />
-          </div>
-          <div className="absolute bottom-20 left-32 opacity-20">
-            <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=200" alt="" className="w-36 h-36 rounded-full blur-sm" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-pink-50 to-white">
+        <div className="container mx-auto px-4 relative z-10 py-20">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Свежие цветы<br />
@@ -439,9 +398,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
         </div>
       </section>
 
-      <section className="py-16" style={{
-        background: 'linear-gradient(to bottom, #ffffff 0%, #fff5f8 100%)'
-      }}>
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
@@ -457,11 +414,8 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
         </div>
       </section>
 
-      <section className="py-16 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 50%, #ffe6f0 0%, transparent 50%), radial-gradient(circle at 80% 80%, #ffe6f0 0%, transparent 50%)',
-        }}></div>
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="py-16 bg-gradient-to-b from-white to-pink-50">
+        <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
             <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
               Популярные букеты
@@ -507,9 +461,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
         </div>
       </section>
 
-      <section className="py-16" style={{
-        background: 'linear-gradient(to bottom, #fff5f8 0%, #ffffff 100%)'
-      }}>
+      <section className="py-16 bg-pink-50">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">
             <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
@@ -538,9 +490,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
   );
 
   const CatalogPage = () => (
-    <section className="py-16 min-h-screen" style={{
-      background: 'linear-gradient(135deg, #fff5f8 0%, #ffffff 50%, #fff5f8 100%)'
-    }}>
+    <section className="py-16 min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
           <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
@@ -629,9 +579,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
 
   const BouquetPage = () =>
     selectedBouquet && (
-      <section className="py-16 min-h-screen" style={{
-        background: 'linear-gradient(to bottom, #fff5f8 0%, #ffffff 100%)'
-      }}>
+      <section className="py-16 min-h-screen bg-gradient-to-b from-pink-50 to-white">
         <div className="container mx-auto px-4">
           <button
             onClick={() => setCurrentPage('catalog')}
@@ -691,9 +639,7 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
     );
 
   const AboutPage = () => (
-    <section className="py-16 min-h-screen" style={{
-      background: 'linear-gradient(135deg, #fff5f8 0%, #ffffff 50%, #fff5f8 100%)'
-    }}>
+    <section className="py-16 min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">
           <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
@@ -734,63 +680,8 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
     </section>
   );
 
-  const DeliveryPage = () => (
-    <section className="py-16 min-h-screen" style={{
-      background: 'linear-gradient(to bottom, #fff5f8 0%, #ffffff 100%)'
-    }}>
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">
-          <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
-            Доставка и оплата
-          </span>
-        </h1>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-          Ответы на часто задаваемые вопросы
-        </p>
-
-        <div className="max-w-3xl mx-auto space-y-4">
-          {faqs.map((f, i) => (
-            <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <button
-                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                className="flex justify-between items-center w-full p-6 text-left hover:bg-pink-50 transition-colors"
-              >
-                <span className="font-medium text-lg pr-4">{f.q}</span>
-                {expandedFaq === i ? (
-                  <ChevronUp className="w-5 h-5 text-pink-500 flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                )}
-              </button>
-              {expandedFaq === i && (
-                <div className="px-6 pb-6 text-gray-700">{f.a}</div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="max-w-3xl mx-auto mt-12 bg-gradient-to-br from-pink-50 to-rose-50 rounded-3xl p-8 shadow-xl">
-          <h2 className="text-2xl font-bold mb-4 text-center">Остались вопросы?</h2>
-          <p className="text-center text-gray-700 mb-6">
-            Свяжитесь с нами любым удобным способом
-          </p>
-          <div className="flex justify-center">
-            <button
-              onClick={() => setShowContactModal(true)}
-              className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 rounded-2xl font-medium transition-all shadow-lg"
-            >
-              Задать вопрос
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
   const ContactsPage = () => (
-    <section className="py-16 min-h-screen" style={{
-      background: 'linear-gradient(135deg, #fff5f8 0%, #ffffff 50%, #fff5f8 100%)'
-    }}>
+    <section className="py-16 min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">
           <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
@@ -930,8 +821,17 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
                     disabled={isSubmitting}
                     className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                   >
-                    <Send className="w-5 h-5" />
-                    {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Отправка...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Отправить сообщение
+                      </>
+                    )}
                   </button>
                 </>
               ) : (
@@ -1002,10 +902,10 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
                 О нас
               </button>
               <button
-                onClick={() => setCurrentPage('delivery')}
+                onClick={() => setCurrentPage('contacts')}
                 className="block text-gray-400 hover:text-white transition-colors"
               >
-                Доставка
+                Контакты
               </button>
             </div>
           </div>
@@ -1057,7 +957,6 @@ ${formData.bouquet ? `🌹 Букет: ${formData.bouquet}` : ''}
       {currentPage === 'catalog' && <CatalogPage />}
       {currentPage === 'bouquet' && <BouquetPage />}
       {currentPage === 'about' && <AboutPage />}
-      {currentPage === 'delivery' && <DeliveryPage />}
       {currentPage === 'contacts' && <ContactsPage />}
       <Footer />
       {showContactModal && <ContactModal />}
